@@ -1,67 +1,44 @@
-# Book Tracker — Frontend (Week 5: AI)
+# Claude Chat UI
 
-Frontend for the Book Tracker app, extended in Week 5 with an AI assistant page that talks to the Claude-backed endpoints in [week-05-api](https://github.com/Auth3nticAI/week-05-api).
+> Two-mode chat page that talks to a Claude-backed FastAPI service. **General Chat** is a stateless book assistant; **Book Recommendations** sends the conversation to the context-aware endpoint that knows your library. Mode toggle clears history so the two contexts don't bleed.
 
-The Week 4 pages (books list, detail, add) are unchanged. What's new is `/chat` — a two-mode chat UI with persistent conversation history.
+![Next.js](https://img.shields.io/badge/Next.js-16-000000?style=flat&logo=nextdotjs)
+![React](https://img.shields.io/badge/React-19-61DAFB?style=flat&logo=react&logoColor=black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=flat&logo=typescript&logoColor=white)
+![Tailwind](https://img.shields.io/badge/Tailwind-4-06B6D4?style=flat&logo=tailwindcss&logoColor=white)
+
+Backend: [claude-rag-recommendations](https://github.com/Auth3nticAI/claude-rag-recommendations)
+
+---
+
+![personalized recommendation citing actual library books](screenshots/chat-recommendation-reply.png)
+
+## What's interesting
+
+- **Two modes via a segmented control** — toggling between General Chat and Book Recommendations clears the conversation so the assistant doesn't carry irrelevant history across contexts.
+- **Conversation history held in client state** and round-tripped on every turn, so the assistant has full context without server-side session storage.
+- **Auto-scroll** + bouncing "Thinking…" bubble while the request is in flight.
+- **User messages right-aligned blue**, assistant messages left-aligned slate, whitespace-preserved for the multi-line replies Claude tends to return.
 
 ## Stack
 
-- **Next.js 16** (App Router) with **TypeScript** and **Tailwind CSS v4**
-- Client-side fetching with `useEffect` / `useState`
-- No extra dependencies — just `next`, `react`, `tailwindcss`
-
-## Pages
-
-| Path | Purpose |
-|---|---|
-| `/` | Homepage with hero + quick links |
-| `/books` | List books, filter empty / loading / error states |
-| `/books/new` | Add a new book via a form |
-| `/books/[id]` | Book detail + status update + rating + delete |
-| `/chat` | AI assistant with two modes: General Chat and Book Recommendations |
-
-## The chat page (`/chat`)
-
-- **Two modes** via a segmented control:
-  - **General Chat** → POST `/ai/chat` — generic book assistant, no library context
-  - **Book Recommendations** → POST `/ai/recommend` — assistant is given your library and recommends accordingly
-- **Conversation history** is held in client state and sent back to the server on every turn so the assistant has full context.
-- **Switching modes clears history** so the two contexts don't bleed into each other.
-- **Loading state** is a bouncing "Thinking..." bubble in the message stream.
-- **Error state** appears as a red bar above the input.
-- **User messages** are right-aligned blue bubbles; **assistant messages** are left-aligned slate bubbles.
-- **Auto-scrolls** to the bottom when new messages arrive.
+- Next.js 16 App Router + TypeScript
+- Tailwind 4
+- `NEXT_PUBLIC_API_URL` env var for the API base
+- No state library — `useState` + `useRef` for the message scroll container
 
 ## Run
 
 ```bash
-# 1. Backend must be running on http://localhost:8000
-#    See: https://github.com/Auth3nticAI/week-05-api
+# Backend must be running on :8000 first
 
-# 2. Install
 npm install
-
-# 3. Configure
 echo "NEXT_PUBLIC_API_URL=http://127.0.0.1:8000" > .env.local
-
-# 4. Dev server
 npm run dev
 ```
 
 Open http://localhost:3000.
 
-## Environment
+## Background
 
-| Variable | Purpose |
-|---|---|
-| `NEXT_PUBLIC_API_URL` | Base URL of the FastAPI backend (defaults to `http://127.0.0.1:8000`) |
-
-`.env.local` is gitignored by default in Next.js.
-
-## What changed from Week 4
-
-- Added `app/chat/page.tsx` (~210 lines) — the chat UI
-- Added "AI Assistant" link to the nav in `layout.tsx`
-- Updated the footer label to "Week 5 Lab (AI)"
-
-That's it. The interesting work is on the backend.
+Built as the Week 5 lab for **CSE552 — Fullstack Software Development in the Age of AI Agents**. Capstone version (with the agent + notes synthesis) lives at [book-tracker-ai](https://github.com/Auth3nticAI/book-tracker-ai).
